@@ -1,10 +1,10 @@
-# FastOrder — Documento de Diseño (Versión 3)
+# FastOrder — Documento de Diseño (Versión 4)
 
-Fecha: 2026-09-07 (v3)
-Estado: V3 final para presentación al docente. Sobre la v2 se incorpora el
-registro de llamados del día persistido en SQLite (costo cero, sin Telegram
-ni smartwatch). La notificación al mozo queda a cargo exclusivamente del
-llamador ESP32 físico (buzzer + OLED + LEDs + botón de confirmación).
+Fecha: 2026-09-07 (v4)
+Estado: V4 para presentación al docente. Sobre la v3 cambia el hardware de
+notificación al mozo: el llamador ESP32 (OLED + LEDs + buzzer + botón) se
+reemplaza por un **dashboard web del mozo** en la red local. Se mantiene el
+registro de llamados del día persistido en SQLite (costo cero).
 
 ## 1. Resumen
 
@@ -12,8 +12,9 @@ FastOrder es un sistema de autoservicio para restaurantes de sushi. Permite
 que el cliente realice su pedido desde su propio celular escaneando un QR
 pegado en su mesa, que el pedido llegue al instante a la cocina, y que una
 botonera física con ESP32 (tres botones: hacer pedido, llamar mozo, pedir
-cuenta) conecte la mesa física con el sistema digital. Un ESP32 adicional
-actúa como llamador inalámbrico del mozo con pantalla OLED, LEDs y buzzer.
+cuenta) conecte la mesa física con el sistema digital. El mozo recibe los
+avisos en un **dashboard web** abierto en la red local, con un color por
+motivo y confirmación de cada aviso atendido.
 
 Cada aviso del mozo queda registrado en la base del sistema (mesa, motivo,
 hora, confirmación). Este registro es un indicador de calidad de atención y
@@ -61,7 +62,7 @@ reiteradamente al mozo.
   de su consumo (ven su total).
 - **Cocina:** pedidos estandarizados y directos del consumidor.
 - **Mozos:** su rol se transforma a "gestores de experiencia y entrega";
-  reciben llamados claros con número de mesa y motivo vía llamador físico.
+  reciben llamados claros con número de mesa y motivo en su dashboard.
 - **Dueño:** optimización del personal y (a futuro) métricas reales de consumo.
 
 ## 4. Alcance y MVP
@@ -70,10 +71,11 @@ reiteradamente al mozo.
 
 Clientes escanean un QR, ven la carta, arman su pedido en la app y lo
 confirman con el botón "Hacer pedido" de la botonera. La cocina ve el pedido
-en vivo con el id de mesa. Los botones "Llamar mozo" y "Pedir cuenta" notifican
-al llamador del mozo (OLED + LED + buzzer). Al pedir cuenta, el cliente ve el
-total en su celular. Los avisos al mozo se manejan con cola FIFO y botón de
-confirmación. Sesión persistente por mesa.
+en vivo con el id de mesa. Los botones "Llamar mozo" y "Pedir cuenta" generan
+avisos que aparecen en el dashboard del mozo con un color por motivo
+(rojo = llaman, verde = cuenta, azul = pedido listo). Al pedir cuenta, el
+cliente ve el total en su celular. Los avisos al mozo se manejan con cola FIFO
+y confirmación desde la pantalla. Sesión persistente por mesa.
 
 ### Fuera del MVP (pos-pedido)
 
@@ -92,29 +94,36 @@ El servidor corre en una laptop/computadora del local y toda la comunicación
 ocurre por la red WiFi local. Funciona sin Internet.
 
 ```
-                    ┌─ BOTONERA ESP32 (en cada mesa) ─┐
- CLIENTE            │   ▢ Hacer pedido (confirma app)  │
- (celular + QR) ───▶│   ▢ Llamar mozo                   │
- viaja el pedido    │   ▢ Pedir cuenta                  │
- de la app          └──────────┬───────────────────────┘
-                              │ WiFi / WebSocket
-                              ▼
-                  ┌───── SERVIDOR (Node + SQLite) ─────┐
-                  │  · pedidos + estados                │
-                  │  · TOTAL de consumo (sin AFIP)      │
-                  │  · cola FIFO de avisos              │
-                  └────┬──────────────────┬────────────┘
-                       │                  │
-                       ▼                  ▼
-              ┌── COCINA ──┐      ┌── MOZO ──┐      ┌── CLIENTE ──┐
-              │ dashboard  │      │ ESP32    │      │ celular     │
-              │ SOLO       │      │ llamador │      │ ve TOTAL    │
-              │ pedidos +  │      │ OLED +   │      │ al pedir    │
-              │ id de mesa │      │ LEDs +   │      │ cuenta      │
-              └────────────┘      │ buzzer + │      └─────────────┘
-                                  │ botón    │
-                                  └──────────┘
+                     ┌─ BOTONERA ESP32 (en cada mesa) ─┐
+  CLIENTE            │   ▢ Hacer pedido (confirma app)  │
+  (celular + QR) ───▶│   ▢ Llamar mozo                   │
+  viaja el pedido    │   ▢ Pedir cuenta                  │
+  de la app          └──────────┬───────────────────────┘
+                               │ WiFi / WebSocket
+                               ▼
+                   ┌───── SERVIDOR (Node + SQLite) ─────┐
+                   │  · pedidos + estados                │
+                   │  · TOTAL de consumo (sin AFIP)      │
+                   │  · cola FIFO de avisos              │
+                   └────┬──────────────────┬────────────┘
+                        │                  │
+                        ▼                  ▼
+               ┌── COCINA ──┐      ┌── MOZO ──┐      ┌── CLIENTE ──┐
+               │ dashboard  │      │ dashboard│      │ celular     │
+               │ web        │      │ web      │      │ ve TOTAL    │
+               │ pedidos +  │      │ cola de  │      │ al pedir    │
+               │ id de mesa │      │ avisos   │      │ cuenta      │
+               │ marca      │      │ (mesa +  │      └─────────────┘
+               │ "listo"    │      │ motivo + │
+               └────────────┘      │ color)   │
+                                   └──────────┘
 ```
+
+Las dos pantallas del personal (cocina y mozo) son páginas web servidas por el
+mismo servidor y abiertas en la red local del restaurante. La v3 de este
+documento usaba para el mozo un dispositivo ESP32 aparte ("llamador") con
+pantalla OLED, LEDs y buzzer; la v4 lo reemplaza por el dashboard web del mozo,
+lo que deja un solo dispositivo de hardware por mesa.
 
 ### Flujo del sistema
 
@@ -131,10 +140,12 @@ ocurre por la red WiFi local. Funciona sin Internet.
    con id de mesa y en orden de llegada.
 6. Cuando cocina marca "listo", el sistema actualiza el estado y avisa al mozo.
 7. Botones de la botonera:
-   - "Llamar mozo" → cola FIFO → llamador del mozo: "MESA N" + LED rojo + buzzer.
-   - "Pedir cuenta" → el cliente ve total en su celular + llamador LED verde.
-8. El mozo confirma cada aviso con el botón del llamador → pasa al siguiente
-   pendiente.
+   - "Llamar mozo" → cola FIFO → dashboard del mozo: "MESA N" en color rojo.
+   - "Pedir cuenta" → el cliente ve total en su celular + dashboard del mozo en
+     color verde.
+8. El mozo confirma cada aviso desde el dashboard → pasa al siguiente pendiente.
+9. Cuando la cocina marca un pedido como "listo", el dashboard del mozo muestra
+   ese pedido en color azul.
 
 ### Sesión de mesa (mejora 1)
 
@@ -145,10 +156,12 @@ El servidor mantiene una sesión/estado por mesa:
   el total y cierra la cuenta.
 - Si el cliente cierra la app o se reconecta, no pierde su pedido.
 
-### Buzzer (mejora 2)
+### Alerta sonora
 
-El llamador del mozo incluye un buzzer: suena cuando llega un aviso y se corta
-al confirmar. Pensado para entornos ruidosos (sala/cocina).
+El dashboard del mozo emite un sonido de alerta cuando llega un aviso y se
+corta al confirmar. Está pensado para una sala ruidosa. Como es una página web,
+el navegador exige que el usuario haya interactuado con la página antes de
+permitir sonido: queda anotado como riesgo de QA en la Fase 7.
 
 ### Registro de llamados del día
 
@@ -161,25 +174,25 @@ que el servidor ya procesa.
 
 ### Módulos del sistema
 
-| # | Módulo | Qué hace | Depende de |
-|---|--------|----------|------------|
-| 1 | Base de datos (SQLite) | Guarda carta, mesas, pedidos, sesiones, avisos | nada |
-| 2 | Servidor central (Node.js) | API + WebSockets + cola FIFO de avisos | base de datos |
-| 3 | App del cliente (web) | QR → menú → carrito → confirmar con botón; ver total | servidor |
-| 4 | Dashboard cocina (web) | Muestra pedidos (id de mesa) en vivo; marca "listo" | servidor |
-| 5 | Botonera ESP32 (C++) | 3 botones físicos; reporta "mesa N online" | servidor |
-| 6 | Llamador ESP32 mozo (C++) | OLED + LEDs (rojo/verde/azul) + buzzer + botón confirmar | servidor |
+| # | Módulo | Dónde vive | Qué hace | Depende de |
+|---|--------|-------------|----------|------------|
+| 1 | Base de datos (SQLite) | `src/backend/db` | Guarda carta, mesas, pedidos, sesiones, avisos | nada |
+| 2 | Servidor central (Node.js) | `src/backend/server` | API + WebSockets + cola FIFO de avisos | base de datos |
+| 3 | App del cliente (web) | `src/frontend/cliente` | QR → menú → carrito → confirmar con botón; ver total | servidor |
+| 4 | Dashboard cocina (web) | `src/frontend/dashboard-cocina` | Muestra pedidos (id de mesa) en vivo; marca "listo" | servidor |
+| 5 | Dashboard mozo (web) | `src/frontend/dashboard-mozo` | Cola de avisos (mesa + motivo + color); confirma cada uno | servidor |
+| 6 | Botonera ESP32 (C++) | `src/backend/hardware` | 3 botones físicos; reporta "mesa N online" | servidor |
 
-## 6. Tecnologías (v2)
+## 6. Tecnologías
 
 | Pieza | Tecnología | Motivo |
 |---|---|---|
 | Servidor central | Node.js + JavaScript | Tiempo real (WebSockets) nativo y sencillo; mismo idioma en todo el stack |
 | Dashboard cocina | HTML + CSS + JavaScript | Misma tecnología que el servidor |
+| Dashboard mozo | HTML + CSS + JavaScript | Misma tecnología que el servidor |
 | App del cliente | Web responsiva (PWA) | Un solo idioma en todo el sistema; funciona para un restaurante real |
 | Base de datos | SQLite (vía ORM migrable a PostgreSQL) | Cero configuración; migrable sin reescribir código |
 | Botonera mesa | C/C++ (ESP32, Arduino) | Lenguaje de la placa; comunicación por red |
-| Llamador mozo | C/C++ (ESP32, Arduino) | Mismo lenguaje y patrón de comunicación que la botonera |
 | Comunicación | WebSockets (JSON sobre WiFi local) | Tiempo real; MQTT documentado como evolución futura |
 
 Regla del proyecto: JavaScript para todo lo que corre en computadoras y
@@ -193,10 +206,10 @@ celulares; C++ para las placas. La comunicación entre piezas es por la red
 - **Pedido:** id, mesa, estado, fecha.
 - **ItemPedido:** id, pedido_id, producto_id, cantidad.
 - **SesionMesa:** mesa_id, pedido_abierto_id, activa.
-- **AvisoMozo:** id, mesa, tipo (llamar_mozo | pedir_cuenta), estado (pendiente/atendido), fecha, hora, hora_confirmacion.
+- **AvisoMozo:** id, mesa, tipo (llamar_mozo | pedir_cuenta | pedido_listo), estado (pendiente/atendido), fecha, hora, hora_confirmacion.
 - **EstadoMesa:** mesa_id, online (enviado por ESP32).
 
-## 7. Cronograma (actualizado por la v2)
+## 7. Cronograma (actualizado por la v4)
 
 | Fase | Qué construimos | Resultado visible | Duración aprox. |
 |---|---|---|---|
@@ -206,10 +219,12 @@ celulares; C++ para las placas. La comunicación entre piezas es por la red
 | 3 | App del cliente: QR → menú → carrito → ver total | "Pido sushi desde el celular" | 1.5-2 semanas |
 | 4 | Dashboard cocina: pedidos en vivo + "listo" | "La cocina ve el pedido al instante" | 1 semana |
 | 5 | Botonera ESP32: 3 botones + "mesa N online" | "Los botones envían al sistema" | 1.5 semanas |
-| 6 | Llamador ESP32 mozo: OLED + LEDs + buzzer + cola | "El mozo recibe avisos con mesa y motivo" | 1.5 semanas |
+| 6 | Dashboard mozo: cola de avisos + color + confirmación | "El mozo recibe avisos con mesa y motivo" | 1 semana |
 | 7 | QA + pruebas + ajustes | Sistema probado de punta a punta | 1 semana |
 
-Total estimado: 9-10 semanas (más margen para documentación e imprevistos).
+Total estimado: 8-9 semanas. Sobre la v3 se ahorra media semana: la fase 6 ya
+no es construir un dispositivo ESP32 con OLED, LEDs y buzzer, sino una pantalla
+web que reaprovecha la infraestructura de la fase 4.
 
 ## 8. Arquitectura de crecimiento (documentada, no construida)
 
@@ -217,8 +232,9 @@ Camino de escalabilidad del sistema, para integrar en la memoria/defensa:
 
 - **Crecimiento de mesas (escalabilidad natural):** cada botonera es un ESP32
   autónomo; agregar mesas = agregar dispositivos, no reescribir nada.
-- **Más dispositivos en red:** cuando haya >30 dispositivos, evolucionar de
-  WebSockets a MQTT (estándar IoT) con el mismo modelo de datos JSON.
+- **Más dispositivos en red:** la v4 ya no necesita evolucionar a MQTT por
+  cantidad de dispositivos: queda un ESP32 por mesa. El salto a MQTT queda
+  documentado para una fase posterior de crecimiento, con el mismo modelo JSON.
 - **Servidor y datos:** migrar de laptop local + SQLite a servidor dedicado
   (Raspberry Pi/PC) o nube, con PostgreSQL vía el ORM (cambio de configuración,
   sin reescribir lógica).
@@ -233,7 +249,11 @@ Camino de escalabilidad del sistema, para integrar en la memoria/defensa:
 - Si el profesor exige MySQL/PostgreSQL, migrar es un cambio de configuración
   del ORM.
 - La comunicación del ESP32 dependerá del modelo de placa (ESP32 con WiFi).
-- Compra/stock de componentes: OLED SSD1306, buzzer, botones.
+- Compra/stock de componentes: botones táctiles, cables, fuente y placa ESP32 por
+  mesa. Ya no se necesitan OLED, LEDs ni buzzer (se eliminaron al pasar el aviso
+  del mozo a un dashboard web).
+- El navegador puede bloquear la alerta sonora del dashboard del mozo hasta que
+  el usuario interactúa con la página: hay que probarlo en la Fase 7.
 - El total se calcula sin errores de redondeo (2 decimales).
 
 ## 10. Metodología de trabajo

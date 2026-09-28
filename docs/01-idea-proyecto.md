@@ -21,9 +21,9 @@ Se espera que el cliente obtenga una atención eficaz y certera. El sistema debe
 
 ## BREVE DESCRIPCIÓN DEL PROYECTO
 
-FastOrder evoluciona a un sistema de autoservicio inteligente. Consiste en una aplicación móvil para el cliente y una botonera programada con Arduino (ESP32) fija en la mesa. El cliente escanea el QR de su mesa, realiza el pedido desde su smartphone y lo confirma con el botón físico "Hacer pedido"; además utiliza los botones físicos para solicitudes rápidas ("Llamar mozo", "Pedir cuenta"). La señal viaja al instante al Dashboard de Cocina y al panel del personal de servicio.
+FastOrder evoluciona a un sistema de autoservicio inteligente. Consiste en una aplicación móvil para el cliente y una botonera programada con Arduino (ESP32) fija en la mesa. El cliente escanea el QR de su mesa, realiza el pedido desde su smartphone y lo confirma con el botón físico "Hacer pedido"; además utiliza los botones físicos para solicitudes rápidas ("Llamar mozo", "Pedir cuenta"). La señal viaja al instante al Dashboard de Cocina y al Dashboard del Mozo, ambos abiertos en la red local del restaurante.
 
-La botonera de cada mesa se presenta en la red local como "mesa N online". Un segundo dispositivo ESP32 actúa como llamador inalámbrico del mozo: muestra qué mesa lo llama y por qué motivo mediante pantalla OLED, LEDs de color (rojo = llaman, verde = cuenta, azul = pedido listo) y un buzzer para ambientes ruidosos. Con un botón, el mozo confirma cada aviso y pasa al siguiente; los llamados de varias mesas se atienden en orden de llegada (cola FIFO).
+La botonera de cada mesa se presenta en la red local como "mesa N online". El personal usa dos pantallas web servidas por el mismo sistema: el **Dashboard de Cocina**, que muestra los pedidos que entran en vivo con el número de mesa, y el **Dashboard del Mozo**, que muestra qué mesa lo llama y por qué motivo, con un color por motivo (rojo = llaman, verde = cuenta, azul = pedido listo) y una alerta sonora. Los llamados de varias mesas se atienden en orden de llegada (cola FIFO), y con un clic el mozo confirma cada aviso y pasa al siguiente.
 
 Al presionar "Pedir cuenta", el cliente ve en su celular el detalle y el total de lo consumido, y el mozo es notificado para acercarse a cobrar. El sistema **no emite factura fiscal (sin AFIP)**: solo calcula y muestra el total de lo que el cliente va a consumir, ni más ni menos. Cada aviso y cada cuenta quedan registrados en la base de datos del sistema, permitiendo consultar el historial del día.
 
@@ -41,9 +41,9 @@ Es la optimización de la comunicación y quitar los obstáculos que hacen que e
 ## DURACIÓN ESTIMADA DEL PROYECTO
 
 - **Fase de Desarrollo (App Móvil y Dashboard):** 4 semanas. Centrado en la base de datos, el servidor con comunicación en tiempo real (WebSockets), el menú digital y la lógica de pedidos para el cliente.
-- **Fase de Integración de Hardware (Arduino):** 3 semanas. Programación de la botonera física, del llamador del mozo y comunicación vía WebSockets por la red local.
+- **Fase de Integración de Hardware (Arduino):** 2 semanas. Programación de la botonera física de cada mesa (3 botones + "mesa N online") y su comunicación vía WebSockets por la red local.
 - **Fase de Pruebas y Despliegue:** 2 semanas. Control de calidad (QA), pruebas de estrés en salón y puesta en marcha.
-- **Duración Total:** Aproximadamente 9 a 10 semanas para la operatividad inicial en el restaurante de sushi.
+- **Duración Total:** Aproximadamente 8 a 9 semanas para la operatividad inicial en el restaurante de sushi.
 
 ## DEFINICIÓN DEL EQUIPO DE TRABAJO
 
@@ -51,6 +51,9 @@ Es la optimización de la comunicación y quitar los obstáculos que hacen que e
 
 ## DOCUMENTOS MENCIONADOS
 
-- **Análisis de Requerimientos, Historias de Usuario y Casos de Uso** — `docs/analisis-fastorder.md`
-- **Diagrama de Casos de Uso (draw.io)** — `docs/diagrama-casos-de-uso.drawio`
-- **Especificación de Diseño** — `docs/superpowers/specs/2026-09-07-fastorder-design.md`
+- **Índice y resumen del proyecto** — [overview.md](../overview.md)
+- **Análisis de Requerimientos, Historias de Usuario y Casos de Uso** — [docs/requirements/](requirements/README.md) (un archivo por HU)
+- **Documento de diseño (arquitectura y tecnologías)** — [docs/specs/2026-09-07-fastorder-design.md](specs/2026-09-07-fastorder-design.md)
+- **Diagrama de Casos de Uso (draw.io)** — [docs/diagrams/diagrama-casos-de-uso.drawio](diagrams/diagrama-casos-de-uso.drawio)
+- **Planes de desarrollo por fase** — [docs/plans/](plans/)
+- **Documentación del frontend y del backend** — [src/frontend.md](../src/frontend.md) y [src/backend.md](../src/backend.md)

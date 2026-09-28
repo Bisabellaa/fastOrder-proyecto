@@ -8,26 +8,31 @@
 de uso) y dejar la computadora lista y el proyecto iniciado con estructura de
 carpetas y control de versiones Git, sin escribir lógica de negocio aún.
 
-**Architecture:** Fase cero del proyecto FastOrder (versión 2 del diseño).
-La documentación de entrega (spec v2, `docs/analisis-fastorder.md` y
-`docs/diagrama-casos-de-uso.drawio`) ya está generada. En esta fase se prepara
-el entorno (Node.js, VS Code, Git — ya instalados), se crea la estructura de
-carpetas del proyecto acorde al diseño v2 (que incluye botonera y llamador
-ESP32), se inicializa Git y se verifica que todo funciona con un "hola mundo"
-mínimo del servidor Node. No hay módulos de negocio todavía.
+**Architecture:** Fase cero del proyecto FastOrder (versión 4 del diseño).
+La documentación de entrega (spec v4, `docs/requirements/`,
+`docs/diagrams/diagrama-casos-de-uso.drawio`) ya está generada. En esta fase se
+prepara el entorno (Node.js, VS Code, Git — ya instalados), se crea la estructura
+de carpetas del proyecto acorde al diseño v4 (que incluye la botonera ESP32 de
+mesa y un dashboard web para el mozo), se inicializa Git y se verifica que todo
+funciona con un "hola mundo" mínimo del servidor Node. No hay módulos de negocio
+todavía.
 
 **Tech Stack:** Node.js 22, npm 10, VS Code, Git 2.46, PowerShell.
 
-**Spec:** `docs/superpowers/specs/2026-09-07-fastorder-design.md`
+**Spec:** `docs/specs/2026-09-07-fastorder-design.md`
 
 ## Global Constraints
 
-- Todo el proyecto trabaja sobre la red WiFi local (no Internet) — Enfoque B del spec v2.
-- El repo debe ser inicializado en la raíz `fast_oder/` y commiteado por fase.
-- El stack no cambia: JavaScript para servidor y frontends; C++ para las dos
-  placas ESP32 (botonera en Fase 5, llamador en Fase 6).
-- La documentación de entrega (spec, análisis con RF/RNF/HU/CU, diagrama
-  draw.io) se considera completa y debe conservarse versionada desde esta fase.
+- Todo el proyecto trabaja sobre la red WiFi local (no Internet) — Enfoque B del spec v4.
+- El repo debe estar inicializado en la raíz `fast_oder/` y commiteado por fase.
+- El stack no cambia: JavaScript para servidor y frontends; C++ para la botonera
+  ESP32 de cada mesa (Fase 5). No hay segundo dispositivo de hardware: el mozo
+  usa un dashboard web.
+- La documentación de entrega (spec, `docs/requirements/` con RF/RNF/HU/CU,
+  `docs/diagrams/diagrama-casos-de-uso.drawio`) se considera completa y debe
+  conservarse versionada desde esta fase.
+- La estructura del proyecto es `docs/` (documentación) y `src/` (código,
+  dividido en `frontend/` y `backend/`). Referencia: `overview.md`.
 - No se avanza a la Fase 1 sin completar y verificar todos los pasos de esta fase.
 - Sistema operativo: Windows; shell: PowerShell 5.1.
 
@@ -91,13 +96,13 @@ Después de instalar, cerrá y reabrí la ventana de PowerShell y repetí los pa
 
 **Files:**
 - Create: `fast_oder/` (raíz del proyecto — ya existe)
-- Create: `fast_oder/db/` — archivos de base de datos SQLite
-- Create: `fast_oder/server/` — código del servidor Node.js
-- Create: `fast_oder/client/` — web del cliente (menú)
-- Create: `fast_oder/kitchen/` — web del dashboard de cocina
-- Create: `fast_oder/esp32/botonera/` — código C++ de la botonera de mesa (Fase 5)
-- Create: `fast_oder/esp32/llamador/` — código C++ del llamador del mozo (Fase 6)
-- Create: `fast_oder/docs/` — documentación, spec, planes y diagramas (existente)
+- Create: `fast_oder/src/frontend/cliente/` — web del cliente (menú)
+- Create: `fast_oder/src/frontend/dashboard-cocina/` — web del dashboard de cocina
+- Create: `fast_oder/src/frontend/dashboard-mozo/` — web del dashboard del mozo
+- Create: `fast_oder/src/backend/server/` — código del servidor Node.js
+- Create: `fast_oder/src/backend/db/` — archivos de base de datos SQLite
+- Create: `fast_oder/src/backend/hardware/` — código C++ de la botonera de mesa (Fase 5)
+- Existe: `fast_oder/docs/` — documentación (spec, requerimientos, diagramas, planes)
 
 **Interfaces:**
 - Consumes: Task 0.1 (entorno verificado)
@@ -108,22 +113,24 @@ Después de instalar, cerrá y reabrí la ventana de PowerShell y repetí los pa
 En PowerShell, ubicada en `C:\Users\brend\Desktop\fast_oder`, ejecutá:
 
 ```powershell
-New-Item -ItemType Directory -Path db, server, client, kitchen, esp32\botonera, esp32\llamador
+New-Item -ItemType Directory -Force -Path src\frontend\cliente, src\frontend\dashboard-cocina, src\frontend\dashboard-mozo, src\backend\server, src\backend\db, src\backend\hardware
 ```
+
+Nota: estas carpetas ya existen (se crearon junto con la documentación), así que
+`-Force` no hace daño. El comando queda anotado por si hay que rehacerlo.
 
 - [ ] **Step 2: Verificar que existen**
 
 ```powershell
-Get-ChildItem
+Get-ChildItem -Recurse -Directory src
 ```
 
-Expected: se ven las carpetas `client`, `db`, `docs`, `esp32`, `kitchen`, `server`
-(y dentro de `esp32`: `botonera` y `llamador`).
+Expected: se ven `src\frontend` (con `cliente`, `dashboard-cocina`,
+`dashboard-mozo`) y `src\backend` (con `server`, `db`, `hardware`).
 
 - [ ] **Step 3: Commit de estructura inicial**
 
 ```powershell
-git init
 git add .
 git commit -m "chore: estructura inicial de carpetas del proyecto FastOrder"
 ```
@@ -133,17 +140,17 @@ git commit -m "chore: estructura inicial de carpetas del proyecto FastOrder"
 ### Task 0.3: Inicializar el proyecto Node.js en la carpeta del servidor
 
 **Files:**
-- Create: `fast_oder/server/package.json`
+- Create: `fast_oder/src/backend/server/package.json`
 
 **Interfaces:**
 - Consumes: Task 0.2 (carpetas creadas)
-- Produces: `server/package.json` — el "documento de identidad" del servidor,
-  donde se listan dependencias y scripts
+- Produces: `src/backend/server/package.json` — el "documento de identidad" del
+  servidor, donde se listan dependencias y scripts
 
-- [ ] **Step 1: Inicializar el proyecto Node en `server`**
+- [ ] **Step 1: Inicializar el proyecto Node en el servidor**
 
 ```powershell
-Set-Location fast_oder/server
+Set-Location src/backend/server
 npm init -y
 ```
 
@@ -163,7 +170,7 @@ Expected: un JSON con `"name": "server"` y una `"version"`.
 ### Task 0.4: Servidor mínimo "hola mundo" que responde en el navegador
 
 **Files:**
-- Create: `fast_oder/server/server.js`
+- Create: `fast_oder/src/backend/server/server.js`
 
 **Interfaces:**
 - Consumes: Task 0.3 (package.json creado)
@@ -173,7 +180,7 @@ Expected: un JSON con `"name": "server"` y una `"version"`.
 
 - [ ] **Step 1: Escribir el archivo `server.js`**
 
-Creá `fast_oder/server/server.js` con este contenido (y NO lo pegues sin
+Creá `src/backend/server/server.js` con este contenido (y NO lo pegues sin
 entenderlo — preguntame cada línea que no entiendas):
 
 ```javascript
@@ -194,7 +201,7 @@ server.listen(port, () => {
 - [ ] **Step 2: Correr el servidor**
 
 ```powershell
-Set-Location fast_oder/server
+Set-Location src/backend/server
 node server.js
 ```
 
@@ -209,7 +216,7 @@ Para detener el servidor: `Ctrl + C` en la consola.
 - [ ] **Step 4: Commit**
 
 ```powershell
-git add server/server.js
+git add src/backend/server/server.js
 git commit -m "feat: servidor minimo hola-mundo FastOrder"
 ```
 
@@ -248,7 +255,7 @@ Expected: el celular muestra `FastOrder: el servidor esta vivo!`.
 Si no funciona, verificá: mismo WiFi, marcar `http://` (no https), el firewall
 de Windows puede estar bloqueando el puerto 3000 (podemos verlo juntos).
 
-- [ ] **Step 3: Commit (si algo cambió) o anotar resultado**
+- [ ] **Step 3: Anotar resultado**
 
 Anotá en `docs/setup-notes.md` (crealo) la IP local y si el celular accedió.
 No hacen falta más cambios de código en esta tarea.
@@ -259,9 +266,10 @@ No hacen falta más cambios de código en esta tarea.
 
 1. **Spec coverage:** Este plan cubre la Fase 0 del cronograma del spec
    ("Preparación: Node, editor, Git, estructura del proyecto — compu lista,
-   proyecto iniciado"). Las fases 1-5 se planifican por separado cuando llega
+   proyecto iniciado"). Las fases 1-7 se planifican por separado cuando llega
    su momento.
 2. **Placeholder scan:** sin TBD/TODO; todos los pasos tienen comandos
    concretos y resultados esperados.
 3. **Type consistency:** el puerto 3000 es consistente en Task 0.4 y 0.5; la
-   estructura de carpetas de Task 0.2 coincide con los módulos del spec.
+   estructura de carpetas de Task 0.2 coincide con los módulos del spec v4 y
+   con lo documentado en `overview.md` y en `src/frontend.md` / `src/backend.md`.

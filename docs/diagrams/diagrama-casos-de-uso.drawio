@@ -29,7 +29,7 @@
         <mxCell id="actor-mozo" value="Mozo" style="shape=umlActor;verticalLabelPosition=bottom;html=1;fontSize=13" vertex="1" parent="1">
           <mxGeometry x="1310" y="480" width="34" height="52" as="geometry" />
         </mxCell>
-        <mxCell id="actor-llamador" value="Llamador&#10;ESP32" style="shape=umlComponent;verticalLabelPosition=bottom;html=1;fontSize=13;fillColor=#ffe6cc;strokeColor=#d79b00" vertex="1" parent="1">
+        <mxCell id="actor-dashmozo" value="Dashboard&#10;del Mozo" style="shape=umlComponent;verticalLabelPosition=bottom;html=1;fontSize=13;fillColor=#ffe6cc;strokeColor=#d79b00" vertex="1" parent="1">
           <mxGeometry x="1292" y="690" width="76" height="90" as="geometry" />
         </mxCell>
 
@@ -121,14 +121,14 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- Llamador ESP32 -->
-        <mxCell id="e-llamador-07" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1" edge="1" source="actor-llamador" target="cu-07" parent="1">
+        <!-- Dashboard del Mozo -->
+        <mxCell id="e-dashmozo-07" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1" edge="1" source="actor-dashmozo" target="cu-07" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-llamador-08" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1" edge="1" source="actor-llamador" target="cu-08" parent="1">
+        <mxCell id="e-dashmozo-08" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1" edge="1" source="actor-dashmozo" target="cu-08" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-llamador-09" style="edgeStyle=orthogonalEdgeStyle;html=1" edge="1" source="actor-llamador" target="cu-09" parent="1">
+        <mxCell id="e-dashmozo-09" style="edgeStyle=orthogonalEdgeStyle;html=1" edge="1" source="actor-dashmozo" target="cu-09" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
