@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" type="device">
+  <diagram id="fastorder-casos-de-uso" name="FastOrder - Casos de Uso">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== LÍMITES DEL SISTEMA ===== -->
+        <mxCell id="system" value="Sistema FastOrder" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;verticalAlign=top;fontStyle=1;fillColor=#f5f5f5;fontSize=16;align=left;spacingLeft=15;spacingTop=10" vertex="1" parent="1">
+          <mxGeometry x="280" y="120" width="980" height="780" as="geometry" />
+        </mxCell>
+
+        <!-- ===== ACTORES (izquierda) ===== -->
+        <mxCell id="actor-cliente" value="Cliente" style="shape=umlActor;verticalLabelPosition=bottom;html=1;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="60" y="260" width="34" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="actor-dueno" value="Dueño" style="shape=umlActor;verticalLabelPosition=bottom;html=1;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="60" y="480" width="34" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="actor-botonera" value="Botonera&#10;ESP32" style="shape=umlComponent;verticalLabelPosition=bottom;html=1;fontSize=13;fillColor=#dae8fc;strokeColor=#6c8ebf" vertex="1" parent="1">
+          <mxGeometry x="40" y="650" width="76" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- ===== ACTORES (derecha) ===== -->
+        <mxCell id="actor-cocina" value="Cocina" style="shape=umlActor;verticalLabelPosition=bottom;html=1;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="1310" y="220" width="34" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="actor-mozo" value="Mozo" style="shape=umlActor;verticalLabelPosition=bottom;html=1;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="1310" y="480" width="34" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="actor-llamador" value="Llamador&#10;ESP32" style="shape=umlComponent;verticalLabelPosition=bottom;html=1;fontSize=13;fillColor=#ffe6cc;strokeColor=#d79b00" vertex="1" parent="1">
+          <mxGeometry x="1292" y="690" width="76" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- ===== CASOS DE USO ===== -->
+        <mxCell id="cu-01" value="CU-01&#10;Realizar pedido&#10;desde la mesa" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366" vertex="1" parent="1">
+          <mxGeometry x="420" y="200" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="cu-02" value="CU-02&#10;Comunicar pedido&#10;a la cocina" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366" vertex="1" parent="1">
+          <mxGeometry x="660" y="200" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="cu-03" value="CU-03&#10;Ver estado&#10;del pedido" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366" vertex="1" parent="1">
+          <mxGeometry x="900" y="200" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="cu-04" value="CU-04&#10;Marcar pedido&#10;como listo" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656" vertex="1" parent="1">
+          <mxGeometry x="420" y="360" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="cu-05" value="CU-05&#10;Cargar y modificar&#10;la carta" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656" vertex="1" parent="1">
+          <mxGeometry x="660" y="360" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="cu-06" value="CU-06&#10;Reportar&#10;mesa activa" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf" vertex="1" parent="1">
+          <mxGeometry x="900" y="360" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="cu-07" value="CU-07&#10;Llamar al mozo" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366" vertex="1" parent="1">
+          <mxGeometry x="420" y="520" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="cu-08" value="CU-08&#10;Pedir la cuenta" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366" vertex="1" parent="1">
+          <mxGeometry x="660" y="520" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="cu-09" value="CU-09&#10;Confirmar aviso&#10;atendido" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00" vertex="1" parent="1">
+          <mxGeometry x="900" y="520" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="cu-10" value="CU-10&#10;Atender múltiples&#10;llamados (cola FIFO)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00" vertex="1" parent="1">
+          <mxGeometry x="660" y="680" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- ===== CONEXIONES ===== -->
+        <!-- Cliente -->
+        <mxCell id="e-cliente-01" style="edgeStyle=orthogonalEdgeStyle;html=1" edge="1" source="actor-cliente" target="cu-01" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-cliente-03" style="edgeStyle=orthogonalEdgeStyle;html=1" edge="1" source="actor-cliente" target="cu-03" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-cliente-07" style="edgeStyle=orthogonalEdgeStyle;html=1" edge="1" source="actor-cliente" target="cu-07" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-cliente-08" style="edgeStyle=orthogonalEdgeStyle;html=1" edge="1" source="actor-cliente" target="cu-08" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Dueño -->
+        <mxCell id="e-dueno-05" style="edgeStyle=orthogonalEdgeStyle;html=1" edge="1" source="actor-dueno" target="cu-05" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Botonera ESP32 -->
+        <mxCell id="e-botonera-01" style="edgeStyle=orthogonalEdgeStyle;html=1" edge="1" source="actor-botonera" target="cu-01" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-botonera-06" style="edgeStyle=orthogonalEdgeStyle;html=1" edge="1" source="actor-botonera" target="cu-06" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-botonera-07" style="edgeStyle=orthogonalEdgeStyle;html=1" edge="1" source="actor-botonera" target="cu-07" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-botonera-08" style="edgeStyle=orthogonalEdgeStyle;html=1" edge="1" source="actor-botonera" target="cu-08" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Cocina -->
+        <mxCell id="e-cocina-02" style="edgeStyle=orthogonalEdgeStyle;html=1" edge="1" source="actor-cocina" target="cu-02" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-cocina-04" style="edgeStyle=orthogonalEdgeStyle;html=1" edge="1" source="actor-cocina" target="cu-04" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Mozo -->
+        <mxCell id="e-mozo-07" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1" edge="1" source="actor-mozo" target="cu-07" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-mozo-08" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1" edge="1" source="actor-mozo" target="cu-08" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-mozo-09" style="edgeStyle=orthogonalEdgeStyle;html=1" edge="1" source="actor-mozo" target="cu-09" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Llamador ESP32 -->
+        <mxCell id="e-llamador-07" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1" edge="1" source="actor-llamador" target="cu-07" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-llamador-08" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1" edge="1" source="actor-llamador" target="cu-08" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-llamador-09" style="edgeStyle=orthogonalEdgeStyle;html=1" edge="1" source="actor-llamador" target="cu-09" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
